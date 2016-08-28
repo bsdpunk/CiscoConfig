@@ -1,0 +1,58 @@
+!
+version 12.2
+service timestamps debug uptime
+service timestamps log uptime
+no service password-encryption
+!
+hostname LonelyRouter
+!
+enable secret 5 $1$.3R.$UuBrRGuU9BAbBkN03EYBi/
+!
+ip subnet-zero
+!
+!
+ip name-server 68.87.68.162
+ip name-server 68.87.74.162
+ip dhcp excluded-address 192.168.2.1
+ip dhcp excluded-address 192.168.103.1
+!
+ip dhcp pool CLIENT
+import all
+network 192.168.103.0 255.255.255.0
+dns-server 68.87.68.162 
+default-router 192.168.103.1 
+!
+ip audit notify log
+ip audit po max-events 100
+!
+!
+!
+interface Ethernet0/0
+ip address dhcp
+ip nat outside
+no ip route-cache
+no ip mroute-cache
+half-duplex
+no cdp enable
+!
+interface Ethernet0/1
+ip address 192.168.103.1 255.255.255.0
+ip nat inside
+half-duplex
+!
+ip nat inside source list 102 interface Ethernet0/0 overload
+ip nat inside source list 103 interface Ethernet0/0 overload
+ip classless
+ip route 0.0.0.0 0.0.0.0 Ethernet0/0
+ip http server
+ip pim bidir-enable
+!
+access-list 103 permit ip 192.168.103.0 0.0.0.255 any
+!
+line con 0
+line aux 0
+line vty 0 4
+password set
+login
+!
+end
